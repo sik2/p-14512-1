@@ -16,15 +16,17 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.stream.Collectors;
 
+@RequestMapping("/posts")
 @RequiredArgsConstructor
 @Controller
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/posts/write")
+    @GetMapping("/write")
     public String showWrite(@ModelAttribute("form") WriteForm form) {
         return "post/post/write";
     }
@@ -41,7 +43,7 @@ public class PostController {
         String content;
     }
 
-    @PostMapping("/posts/doWrite")
+    @PostMapping("/write")
     @Transactional
     public String write(
         @ModelAttribute("form") @Valid WriteForm form,
