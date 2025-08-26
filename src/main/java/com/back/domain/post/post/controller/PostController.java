@@ -24,7 +24,7 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/posts/write")
-    public String showWrite(WriteForm form) {
+    public String showWrite() {
         return "post/post/write";
     }
 
