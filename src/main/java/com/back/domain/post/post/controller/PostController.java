@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Controller
 public class PostController {
@@ -24,7 +26,7 @@ public class PostController {
     @GetMapping("/posts/write")
     @ResponseBody
     public String showWrite() {
-        return getWriteFormHtml("","", "", "");
+        return getWriteFormHtml("", "", "");
     }
 
     @AllArgsConstructor
@@ -48,12 +50,13 @@ public class PostController {
     ) {
         if (bindingResult.hasErrors()) {
 
-            FieldError filedError = bindingResult.getFieldError();
+            String errorMessage = bindingResult
+                    .getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.joining("<br>"));
 
-            String errorFiledName = filedError.getField();
-            String errorMessage = filedError.getDefaultMessage();
-
-            return getWriteFormHtml(errorFiledName, errorMessage, form.getTitle(), form.getContent());
+            return getWriteFormHtml(errorMessage, form.getTitle(), form.getContent());
         }
 
         Post post = postService.write(form.getTitle(), form.getContent());
@@ -62,13 +65,12 @@ public class PostController {
     }
 
     private String getWriteFormHtml(
-            String errorFiledName,
             String errorMessage,
             String title,
             String content
     ) {
         return """
-                <div style="color:red;">%s : %s</div>
+                <div style="color:red;">%s</div>
                 <form action="/posts/doWrite" method="POST">
                   <input type="text" name="title" placeholder="제목" value="%s" autofocus>
                   <br>
@@ -76,6 +78,6 @@ public class PostController {
                   <br>
                   <input type="submit" value="작성">
                 </form>
-                """.formatted(errorFiledName, errorMessage, title, content);
+                """.formatted(errorMessage, title, content);
     }
 }
