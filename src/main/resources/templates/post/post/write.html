@@ -1,0 +1,9 @@
+<div style="color:red;" th:text="${errorMessage}"></div>
+
+<form action="/posts/doWrite" method="POST">
+    <input type="text" name="title" placeholder="제목" autofocus>
+    <br>
+    <textarea name="content" placeholder="내용"></textarea>
+    <br>
+    <input type="submit" value="작성">
+</form>
