@@ -19,4 +19,8 @@ public class PostService {
 
         return postRepository.save(post);
     }
+
+    public Post findById(Integer id) {
+        return postRepository.findById(id).orElse(null);
+    }
 }
