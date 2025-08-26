@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,18 +24,18 @@ public class PostController {
     @GetMapping("/posts/write")
     @ResponseBody
     public String showWrite() {
-        return getWriteFormHtml("", "", "");
+        return getWriteFormHtml("","", "", "");
     }
 
     @AllArgsConstructor
     @Getter
     public static class WriteForm {
-        @NotBlank
-        @Size(min = 2, max = 20)
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(min = 2, max = 20, message = "제목은 2 ~ 10 자 이내로 입력해주세요.")
         String title;
 
-        @NotBlank
-        @Size(min = 2, max = 100)
+        @NotBlank(message = "내용을 입력해주세요.")
+        @Size(min = 2, max = 100, message = "내용은 2 ~ 100 자 이내로 입력해주세요.")
         String content;
     }
 
@@ -41,20 +43,32 @@ public class PostController {
     @ResponseBody
     @Transactional
     public String write(
-        @Valid WriteForm writeForm
+        @Valid WriteForm form, BindingResult bindingResult
+//        @ModelAttribute("writeForm") WriteForm form
     ) {
-        Post post = postService.write(writeForm.getTitle(), writeForm.getContent());
+        if (bindingResult.hasErrors()) {
+
+            FieldError filedError = bindingResult.getFieldError();
+
+            String errorFiledName = filedError.getField();
+            String errorMessage = filedError.getDefaultMessage();
+
+            return getWriteFormHtml(errorFiledName, errorMessage, form.getTitle(), form.getContent());
+        }
+
+        Post post = postService.write(form.getTitle(), form.getContent());
 
         return "%d 번 글이 생성 되었습니다.".formatted(post.getId());
     }
 
     private String getWriteFormHtml(
+            String errorFiledName,
             String errorMessage,
             String title,
             String content
     ) {
         return """
-                <div style="color:red;">%s</div>
+                <div style="color:red;">%s : %s</div>
                 <form action="/posts/doWrite" method="POST">
                   <input type="text" name="title" placeholder="제목" value="%s" autofocus>
                   <br>
@@ -62,6 +76,6 @@ public class PostController {
                   <br>
                   <input type="submit" value="작성">
                 </form>
-                """.formatted(errorMessage, title, content);
+                """.formatted(errorFiledName, errorMessage, title, content);
     }
 }
