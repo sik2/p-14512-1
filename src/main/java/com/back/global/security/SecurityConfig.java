@@ -17,6 +17,15 @@ public class SecurityConfig {
                         auth -> auth
                                 .requestMatchers("/**").permitAll()
                         )
+                )
+                .csrf(csrf -> csrf
+                        // H2 콘솔 접근 시 CSRF 예외 처리
+                        .ignoringRequestMatchers("/h2-console/**")
+                        .disable()
+                )
+                .headers(headers -> headers
+                        // H2 콘솔은 frame 사용 → sameOrigin 허용
+                        .frameOptions(frame -> frame.sameOrigin())
                 );
         return http.build();
     }
