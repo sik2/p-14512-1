@@ -21,7 +21,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         // H2 콘솔 접근 시 CSRF 예외 처리
                         .ignoringRequestMatchers("/h2-console/**")
-                        .disable()
                 )
                 .headers(headers -> headers
                         // H2 콘솔은 frame 사용 → sameOrigin 허용
