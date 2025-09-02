@@ -1,7 +1,5 @@
 <form th:action="@{/posts/write}" method="POST" th:object="${form}">
-    <ul th:if="${#fields.hasAnyErrors()}">
-        <li th:each="err : ${#fields.allErrors()}" th:text="${err}" style="color:red;"></li>
-    </ul>
+    <div th:replace="~{/common/fragment/errors :: errosFragment}"></div>
     <label for="title">제목</label>
 <!--    <input type="text" id="title" name="title" th:value="*{title}" placeholder="제목" autofocus>-->
     <input type="text" th:field="*{title}" placeholder="제목" autofocus>
