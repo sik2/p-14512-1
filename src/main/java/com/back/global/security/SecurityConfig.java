@@ -32,8 +32,11 @@ public class SecurityConfig {
                         .loginPage("/members/login")
                         .defaultSuccessUrl("/posts/list", true)
                 )
-
-        ;
+                .logout(
+                        logout -> logout
+                                .logoutUrl("/members/logout")
+                                .logoutSuccessUrl("/members/login")
+                );
         return http.build();
     }
 
