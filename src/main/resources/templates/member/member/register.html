@@ -1,4 +1,7 @@
 <form th:action="@{/members/register}" th:object="${registerForm}" method="POST">
+    <ul th:if="${#fields.hasAnyErrors()}">
+        <li th:each="err : ${#fields.allErrors()}" th:text="${err}" style="color:red;"></li>
+    </ul>
     <label for="username">아이디</label>
     <input type="text" th:field="*{username}">
     <br>
