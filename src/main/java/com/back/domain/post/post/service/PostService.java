@@ -30,4 +30,8 @@ public class PostService {
     public List<Post> findAll() {
         return postRepository.findAll();
     }
+
+    public void delete(Post post) {
+        postRepository.delete(post);
+    }
 }

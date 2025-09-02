@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -81,5 +82,22 @@ public class PostController {
         model.addAttribute("posts", posts);
 
         return "post/post/list";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @Transactional
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Integer id, Principal principal) {
+
+        Post post = postService.findById(id);
+
+        // 로그인 사용자가 작성자와 같은 유저인지 검증
+        if(!post.getAuthor().getUsername().equals(principal.getName())){
+            throw new RuntimeException("삭제 권한이 없습니다.");
+        }
+
+        postService.delete(post);
+
+        return "redirect:/posts/list";
     }
 }

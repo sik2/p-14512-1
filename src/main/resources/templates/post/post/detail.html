@@ -7,5 +7,9 @@
     <div>
         <a href="/posts/list">글 목록</a>
     </div>
+    <a
+            sec:authorize="isAuthenticated()"
+            th:if="${post.author != null and #authentication.getPrincipal.getUsername() == post.author.username}"
+            th:href="@{|/posts/delete/${post.id}|}">삭제</a>
 </div>
 </html>
