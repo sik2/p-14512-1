@@ -12,14 +12,13 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public long count() {
         return memberRepository.count();
     }
 
     public Member create(String username, String password, String email) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
         Member member = new Member(username, passwordEncoder.encode(password), email);
 
         return this.memberRepository.save(member);
