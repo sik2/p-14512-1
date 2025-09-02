@@ -1,5 +1,7 @@
 package com.back.domain.post.post.controller;
 
+import com.back.domain.member.member.entity.Member;
+import com.back.domain.member.member.service.MemberService;
 import com.back.domain.post.post.entity.Post;
 import com.back.domain.post.post.service.PostService;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequestMapping("/posts")
@@ -21,6 +24,7 @@ import java.util.List;
 @Controller
 public class PostController {
     private final PostService postService;
+    private final MemberService memberService;
 
     @GetMapping("/write")
     public String showWrite(@ModelAttribute("form") WriteForm form) {
@@ -44,13 +48,17 @@ public class PostController {
     public String write(
         @ModelAttribute("form") @Valid WriteForm form,
         BindingResult bindingResult,
-        Model model
+        Model model,
+        Principal principal
     ) {
         if (bindingResult.hasErrors()) {
             return "post/post/write";
         }
 
-        Post post = postService.write(form.getTitle(), form.getContent());
+        String username = principal.getName();
+        Member member = memberService.findByUsername(username);
+
+        Post post = postService.write(member, form.getTitle(), form.getContent());
 
         model.addAttribute("post", post);
 

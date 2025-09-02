@@ -1,6 +1,5 @@
 package com.back.domain.member.member.controller;
 
-import com.back.domain.member.member.entity.Member;
 import com.back.domain.member.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -16,8 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Optional;
 
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -62,8 +59,7 @@ public class MemberController {
             return "member/member/register";
         }
 
-        Optional<Member> opMember = memberService.findByUsername(registerForm.getUsername());
-
+       memberService.findByUsername(registerForm.getUsername());
 
         try {
             memberService.create(registerForm.getUsername(), registerForm.getPassword(), registerForm.getEmail());

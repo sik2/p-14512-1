@@ -20,11 +20,6 @@ public class Post extends BaseEntity {
     @JoinColumn(name="member_id")
     private Member author;
 
-    public Post(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
-
     public Post(Member author, String title, String content) {
         this.author = author;
         this.title = title;
