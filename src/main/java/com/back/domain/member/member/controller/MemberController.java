@@ -79,4 +79,20 @@ public class MemberController {
 
         return "post/post/list";
     }
+
+    @Getter
+    @Setter
+    public static class LoginForm{
+        @Size(min=3, max= 25)
+        @NotBlank(message = "유저 ID는 필수 항목입니다.")
+        private String username;
+
+        @NotBlank(message = "패스워드는 필수 항목입니다.")
+        private String password;
+    }
+
+    @GetMapping("/login")
+    public String showLogin(LoginForm loginForm) {
+        return "member/member/login";
+    }
 }
