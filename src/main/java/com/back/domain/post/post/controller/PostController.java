@@ -86,7 +86,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @Transactional
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, Principal principal) {
 
         Post post = postService.findById(id);
