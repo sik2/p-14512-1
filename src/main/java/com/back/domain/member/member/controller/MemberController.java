@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,12 +64,18 @@ public class MemberController {
 
         Optional<Member> opMember = memberService.findByUsername(registerForm.getUsername());
 
-        if (opMember.isPresent()) {
-            bindingResult.rejectValue("username", "checkedMemberByUsername", "이미 가입된 회원입니다.");
 
+        try {
+            memberService.create(registerForm.getUsername(), registerForm.getPassword(), registerForm.getEmail());
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            bindingResult.rejectValue("username", "checkedMemberByUsername", "이미 가입된 회원입니다.");
+            return "member/member/register";
+        } catch (Exception e) {
+            e.printStackTrace();
+            bindingResult.reject("registerError", e.getMessage());
             return "member/member/register";
         }
-
 
         return "post/post/list";
     }
