@@ -1,0 +1,16 @@
+<html layout:decorate="~{/common/layout/layout}">
+<form layout:fragment="content" method="POST"
+          th:action="@{/posts/modify}"
+          th:object="${modifyForm}">
+
+    <div th:replace="~{/common/fragment/errors :: errosFragment}"></div>
+    <label for="title">제목</label>
+    <input type="text" th:field="*{title}" placeholder="제목" autofocus>
+
+    <br>
+    <label for="content">제목</label>
+    <textarea th:field="*{content}" placeholder="내용"  ></textarea>
+    <br>
+    <input type="submit" value="작성">
+</form>
+</html>

@@ -13,5 +13,9 @@
                 method="post">
         <button type="submit">삭제</button>
     </form>
+    <a th:href="@{|/posts/modify/${post.id}|}"
+        sec:authorize="isAuthenticated()"
+        th:if="${#authentication.name == post.author.username}"
+    >수정</a>
 </div>
 </html>

@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,5 +100,33 @@ public class PostController {
         postService.delete(post);
 
         return "redirect:/posts/list";
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class ModifyForm {
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(min = 2, max = 20, message = "제목은 2 ~ 10 자 이내로 입력해주세요.")
+        String title;
+
+        @NotBlank(message = "내용을 입력해주세요.")
+        @Size(min = 2, max = 100, message = "내용은 2 ~ 100 자 이내로 입력해주세요.")
+        String content;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify/{id}")
+    public String showModify(@PathVariable Integer id, ModifyForm modifyForm, Principal principal) {
+        Post post = postService.findById(id);
+
+        if(!post.getAuthor().getUsername().equals(principal.getName())){
+            throw new RuntimeException("삭제 권한이 없습니다.");
+        }
+
+        modifyForm.setTitle(post.getTitle());
+        modifyForm.setContent(post.getContent());
+
+        return "post/post/modify";
     }
 }
