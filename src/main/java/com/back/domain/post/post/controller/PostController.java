@@ -2,15 +2,12 @@ package com.back.domain.post.post.controller;
 
 import com.back.domain.member.member.entity.Member;
 import com.back.domain.member.member.service.MemberService;
+import com.back.domain.post.post.dto.ModifyForm;
+import com.back.domain.post.post.dto.WriteForm;
 import com.back.domain.post.post.entity.Post;
 import com.back.domain.post.post.service.PostService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,18 +30,6 @@ public class PostController {
         return "post/post/write";
     }
 
-    @AllArgsConstructor
-    @Getter
-    public static class WriteForm {
-        @NotBlank(message = "제목을 입력해주세요.")
-        @Size(min = 2, max = 20, message = "제목은 2 ~ 10 자 이내로 입력해주세요.")
-        String title;
-
-        @NotBlank(message = "내용을 입력해주세요.")
-        @Size(min = 2, max = 100, message = "내용은 2 ~ 100 자 이내로 입력해주세요.")
-        String content;
-    }
-
     @PostMapping("/write")
     @Transactional
     public String write(
@@ -60,7 +45,7 @@ public class PostController {
         String username = principal.getName();
         Member member = memberService.findByUsername(username);
 
-        Post post = postService.write(member, form.getTitle(), form.getContent());
+        Post post = postService.write(member, form.title(), form.content());
 
         model.addAttribute("post", post);
 
@@ -102,31 +87,18 @@ public class PostController {
         return "redirect:/posts/list";
     }
 
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    public static class ModifyForm {
-        @NotBlank(message = "제목을 입력해주세요.")
-        @Size(min = 2, max = 20, message = "제목은 2 ~ 10 자 이내로 입력해주세요.")
-        String title;
-
-        @NotBlank(message = "내용을 입력해주세요.")
-        @Size(min = 2, max = 100, message = "내용은 2 ~ 100 자 이내로 입력해주세요.")
-        String content;
-    }
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String showModify(@PathVariable Integer id, ModifyForm modifyForm, Model model, Principal principal) {
+    public String showModify(@PathVariable Integer id, Model model, Principal principal) {
         Post post = postService.findById(id);
 
         if(!post.getAuthor().getUsername().equals(principal.getName())){
             throw new RuntimeException("삭제 권한이 없습니다.");
         }
 
-        modifyForm.setTitle(post.getTitle());
-        modifyForm.setContent(post.getContent());
+        ModifyForm form = new ModifyForm(post.getTitle(), post.getContent());
 
+        model.addAttribute("modifyForm", form);
         model.addAttribute("id", id);
 
         return "post/post/modify";
@@ -146,7 +118,7 @@ public class PostController {
             throw new RuntimeException("수정 권한이 없습니다.");
         }
 
-        postService.modify(post, modifyForm.getTitle(), modifyForm.getContent());
+        postService.modify(post, modifyForm.title(), modifyForm.content());
 
         return "redirect:/posts/detail/" + id;
     }
