@@ -117,7 +117,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String showModify(@PathVariable Integer id, ModifyForm modifyForm, Principal principal) {
+    public String showModify(@PathVariable Integer id, ModifyForm modifyForm, Model model, Principal principal) {
         Post post = postService.findById(id);
 
         if(!post.getAuthor().getUsername().equals(principal.getName())){
@@ -127,9 +127,12 @@ public class PostController {
         modifyForm.setTitle(post.getTitle());
         modifyForm.setContent(post.getContent());
 
+        model.addAttribute("id", id);
+
         return "post/post/modify";
     }
 
+    @Transactional
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String modify(@PathVariable Integer id, @Valid ModifyForm modifyForm, BindingResult bindingResult, Principal principal) {
@@ -143,7 +146,7 @@ public class PostController {
             throw new RuntimeException("수정 권한이 없습니다.");
         }
 
-        postService.modify(post, modifyForm.getTitle(), modifyForm.getTitle());
+        postService.modify(post, modifyForm.getTitle(), modifyForm.getContent());
 
         return "redirect:/posts/detail/" + id;
     }

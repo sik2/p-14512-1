@@ -36,5 +36,7 @@ public class PostService {
     }
 
     public void modify(Post post, String title, String content) {
+        post.modify(title, content);
+
     }
 }
